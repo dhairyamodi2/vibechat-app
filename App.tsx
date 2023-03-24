@@ -1,43 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, GestureResponderEvent, StyleSheet, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import io from 'socket.io-client';
 import { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native'
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { Home } from './packages/screens/Home';
+import { Profile } from './packages/screens/Profile';
+import { StackParams } from './packages/types/types';
 
+const Stack = createNativeStackNavigator<StackParams>();
 const socket = io("http://192.168.1.4:3001")
 
 export default function App() {
-  
-  async function handlePress(title: string) {
-    console.log(title)
-    AsyncStorage.setItem("id", title);
-    try {
-      const data = await fetch('http://192.168.1.4:3001')
-      const res = await data.json();
-      socket.connect();
-      socket.emit("chat")
-      // console.log(res);
-    } catch (error) {
-      console.log(error)
-    }
-    
-  }
-
-  useEffect(() => {
-    console.log('rendred');
-    
-    socket.connect()
-    socket.on("connection" , () => console.log('connected'));
-    console.log('done')
-    socket.emit('title');
-    
-  }, [])
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <Button title='Press this for 2 id' onPress={() => handlePress('2')} />
-      <Button title='Press this for 3 id' onPress={() => handlePress('3')} />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name='Home' component={Home} />
+        <Stack.Screen name='Profile' component={Profile}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
